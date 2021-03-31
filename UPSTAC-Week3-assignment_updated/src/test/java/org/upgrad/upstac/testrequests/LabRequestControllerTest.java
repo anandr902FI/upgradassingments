@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.web.server.ResponseStatusException;
+import org.upgrad.upstac.exception.AppException;
 import org.upgrad.upstac.testrequests.lab.CreateLabResult;
 import org.upgrad.upstac.testrequests.lab.LabRequestController;
 import org.upgrad.upstac.testrequests.lab.TestStatus;
@@ -55,7 +56,11 @@ class LabRequestControllerTest {
 	public void calling_assignForLabTest_with_valid_test_request_id_should_throw_exception() {
 
 		Long InvalidRequestId = -34L;
+		ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> {
 
+			labRequestController.assignForLabTest(InvalidRequestId);
+		});
+		assertThat(e.getMessage(), containsString("Invalid ID"));
 		// Implement this method
 
 		// Create an object of ResponseStatusException . Use assertThrows() method and
@@ -72,6 +77,7 @@ class LabRequestControllerTest {
 	public void calling_updateLabTest_with_valid_test_request_id_should_update_the_request_status_and_update_test_request_details() {
 
 		TestRequest testRequest = getTestRequestByStatus(RequestStatus.LAB_TEST_IN_PROGRESS);
+		CreateLabResult c = getCreateLabResult(testRequest);
 
 		// Implement this method
 		// Create an object of CreateLabResult and call getCreateLabResult() to create
@@ -96,8 +102,16 @@ class LabRequestControllerTest {
 	public void calling_updateLabTest_with_invalid_test_request_id_should_throw_exception() {
 
 		TestRequest testRequest = getTestRequestByStatus(RequestStatus.LAB_TEST_IN_PROGRESS);
+		Long InvalidRequestId = -34L;
 
 		// Implement this method
+
+		CreateLabResult c = getCreateLabResult(testRequest);
+		ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> {
+
+			labRequestController.updateLabTest(InvalidRequestId, c);
+		});
+		assertThat(e.getMessage(), containsString("Invalid ID"));
 
 		// Create an object of CreateLabResult and call getCreateLabResult() to create
 		// the object. Pass the above created object as the parameter
@@ -121,6 +135,15 @@ class LabRequestControllerTest {
 		TestRequest testRequest = getTestRequestByStatus(RequestStatus.LAB_TEST_IN_PROGRESS);
 
 		// Implement this method
+		CreateLabResult c = getCreateLabResult(testRequest);
+		c.setResult(null);
+
+		ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> {
+
+			labRequestController.updateLabTest(null, c);
+		});
+
+		assertThat(e.getMessage(), containsString("ConstraintViolationException"));
 
 		// Create an object of CreateLabResult and call getCreateLabResult() to create
 		// the object. Pass the above created object as the parameter
