@@ -1,5 +1,9 @@
 package org.upgrad.upstac.testrequests;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +61,11 @@ class ConsultationControllerTest {
 	public void calling_assignForConsultation_with_valid_test_request_id_should_throw_exception() {
 
 		Long InvalidRequestId = -34L;
+		ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> {
 
+			consultationController.assignForConsultation(InvalidRequestId);
+		});
+		assertThat(e.getMessage(), containsString("Invalid ID"));
 		// Implement this method
 
 		// Create an object of ResponseStatusException . Use assertThrows() method and
@@ -74,6 +82,7 @@ class ConsultationControllerTest {
 	public void calling_updateConsultation_with_valid_test_request_id_should_update_the_request_status_and_update_consultation_details() {
 
 		TestRequest testRequest = getTestRequestByStatus(RequestStatus.DIAGNOSIS_IN_PROCESS);
+		CreateConsultationRequest c = getCreateConsultationRequest(testRequest);
 
 		// Implement this method
 		// Create an object of CreateConsultationRequest and call
@@ -99,7 +108,13 @@ class ConsultationControllerTest {
 	public void calling_updateConsultation_with_invalid_test_request_id_should_throw_exception() {
 
 		TestRequest testRequest = getTestRequestByStatus(RequestStatus.DIAGNOSIS_IN_PROCESS);
+		CreateConsultationRequest c = getCreateConsultationRequest(testRequest);
+		Long InvalidRequestId = -34L;
+		ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> {
 
+			consultationController.updateConsultation(InvalidRequestId, c);
+		});
+		assertThat(e.getMessage(), containsString("Invalid ID"));
 		// Implement this method
 
 		// Create an object of CreateConsultationRequest and call
@@ -125,7 +140,13 @@ class ConsultationControllerTest {
 		TestRequest testRequest = getTestRequestByStatus(RequestStatus.DIAGNOSIS_IN_PROCESS);
 
 		// Implement this method
+		CreateConsultationRequest c = getCreateConsultationRequest(testRequest);
+		c.setSuggestion(null);
 
+		ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> {
+
+			consultationController.updateConsultation(testRequest.getRequestId(), c);
+		});
 		// Create an object of CreateConsultationRequest and call
 		// getCreateConsultationRequest() to create the object. Pass the above created
 		// object as the parameter
